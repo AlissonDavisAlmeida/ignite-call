@@ -13,7 +13,7 @@ model User {
   id         String    @id @default(uuid())
   username   String    @unique
   name       String
-  email      String    @unique
+  email      String?   @unique
   avatar_url String?
   accounts   Account[]
   sessions   Session[]
@@ -37,10 +37,9 @@ model Account {
   id_token            String?
   session_state       String?
 
-  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_account_id])
-
   @@map("accounts")
 }
 

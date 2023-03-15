@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { apiRest } from "../../lib/axios";
 import { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
 
 
 const registerFormSchema = z.object({
@@ -34,6 +35,7 @@ export default function Register() {
         resolver: zodResolver(registerFormSchema)
     })
 
+    const session = useSession()
     const router = useRouter();
 
     useEffect(() => {

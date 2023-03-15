@@ -8,7 +8,7 @@ import { AuthError, ConnectBox, ConnectItem } from "./styles";
 
 
 
-export default function Register() {
+export default function ConnectCalendar() {
 
     const session = useSession()
     const router = useRouter();
@@ -17,7 +17,7 @@ export default function Register() {
     const isSignedIn = session?.status === "authenticated";
 
     const handleRegister = async () => {
-
+        
     }
 
     return (
