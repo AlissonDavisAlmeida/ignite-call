@@ -1,15 +1,31 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Checkbox, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
 import { ArrowRight } from "phosphor-react";
 import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { getWeekDays } from "../../../utils/get-week-days";
 import { Container, Header } from "../styles";
-import { IntervalBox, IntervalDay, IntervalInput, IntervalItem, IntervalsContainer } from "./styles";
+import { FormError, IntervalBox, IntervalDay, IntervalInput, IntervalItem, IntervalsContainer } from "./styles";
 
 
 const timeIntervalsFormSchema = z.object({
+    intervals: z.array(z.object({
+        weekDay: z.number().int().min(0).max(6),
+        enabled: z.boolean(),
+        startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+        endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
 
+    }))
+        .length(7)
+        .transform((intervals) => {
+            return intervals.filter(interval => interval.enabled === true)
+        })
+        .refine((intervals) => intervals.length > 0, {
+            message: "Você deve selecionar pelo menos um intervalo de tempo",
+        })
 })
+
+type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
 
@@ -34,7 +50,8 @@ export default function TimeIntervals() {
                 { weekDay: 6, enabled: false, startTime: "08:00", endTime: "18:00" },
 
             ]
-        }
+        },
+        resolver: zodResolver(timeIntervalsFormSchema)
     })
 
     const intervals = watch("intervals")
@@ -45,7 +62,8 @@ export default function TimeIntervals() {
     })
 
 
-    async function handleSetTimeIntervals() {
+    async function handleSetTimeIntervals(data: TimeIntervalsFormData) {
+        console.log("🚀 ~ file: index.page.tsx:51 ~ handleSetTimeIntervals ~ data:", data)
 
     }
 
@@ -114,11 +132,20 @@ export default function TimeIntervals() {
 
                 </IntervalsContainer>
 
+                {
+                    errors.intervals && (
+                        <FormError size="sm">
+                            {errors.intervals.message}
+                        </FormError>
+                    )
+                }
 
-                <Button type="submit">
+                <Button type="submit" disabled={isSubmitting}>
                     Próximo passo
                     <ArrowRight />
                 </Button>
+
+
             </IntervalBox>
 
         </Container>
